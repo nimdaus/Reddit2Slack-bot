@@ -33,7 +33,7 @@ while True:
             if query in normalized_title:
                 submission.created_utc_format = datetime.fromtimestamp(submission.created_utc, tz=timezone.utc).isoformat()
                 print("Created: {}, Title: {}".format(submission.created_utc_format, submission.title))
-                compound_score = analyzer.polarity.scores(submission.selftext)["compound"]
+                compound_score = analyzer.polarity_scores(submission.selftext)["compound"]
                 if compound_score > 0.5:
                     sentiment_outcome = ":slightly_smiling_face: Seems *Positive*"
                     client = WebClient(token=slack_token)
