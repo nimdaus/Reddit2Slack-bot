@@ -21,21 +21,41 @@ query = config['reddit']['query']
 subreddit_name = config['reddit']['subreddit']
 slack_token = config['slack']['token']
 slack_channel = config['slack']['channel']
-counter = 1
+posts_from = config['reddit']['posts_from']
+sort_by = config['reddit']['sort_by']
+counter = 0
 submissions_list = []
 
 while True:
     try:
-        for submission in reddit.subreddit(subreddit_name).search(query, sort='top'):
+        for submission in reddit.subreddit(subreddit_name).search(query, sort='relevance', time_filter='week'):
             if submission is None:
+                #code for when there's < 3 topics with query
+
+                #what if there's no top datto topic
+                if counter = 0
+                    client = WebClient(token=slack_token)
+                    client.chat_postMessage(
+                    channel = slack_channel,
+                    blocks = [
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": f"*Happy Friday!* There are no relevant results *{config['reddit']['query']} related* _Top 3 Posts_ in /r/{config['reddit']['subreddit']} :sports_medal:"
+                                }
+                        }
+                
+                #procedurally deal with 1/2/3 topics 
                 continue
+
             submission_dict = {"submission_url": "", "submission_title": "", "submission_author_name": "", "submission_score": "", "submission_upvote_ratio": "", "submission_num_comments": "", "submission_created_utc": "", "submission_created_utc_format": ""}
             submission.created_utc_format = datetime.fromtimestamp(submission.created_utc, tz=timezone.utc).isoformat()
             print("Order: {} - Created: {}, Title: {}, Upvotes: {}, Ratio: {}, Comments: {}".format(counter, submission.created_utc_format, submission.title, submission.score, submission.upvote_ratio, submission.num_comments))
             counter += 1
             submission_dict.update({"submission_url": f"{submission.url}", "submission_title": f"{submission.title}", "submission_author_name": f"{submission.author.name}", "submission_score": f"{submission.score}", "submission_upvote_ratio": f"{submission.upvote_ratio}", "submission_num_comments": f"{submission.num_comments}", "submission_created_utc": f"{round(submission.created_utc)}", "submission_created_utc_format": f"{submission.created_utc_format}"})
             submissions_list.append(submission_dict)
-            if counter > 3:
+            if counter > 2:
                 client = WebClient(token=slack_token)
                 client.chat_postMessage(
                 channel = slack_channel,
@@ -74,9 +94,9 @@ while True:
                     ]
                 )
                 print("reseting and sleeping until next week")
-                counter = 1
+                counter = 0
                 submissions_list.clear()
-                time.sleep(604800) 
+                time.sleep(604800)
     except RedditAPIException as exception:
         print("error - waiting 5 seconds and trying again")
         time.sleep(5)
