@@ -42,6 +42,8 @@ subreddit_name = config['reddit']['subreddit']
 slack_token = config['slack']['token']
 slack_channel = config['slack']['channel']
 scan_count = 3
+posts_from = 'week'
+sort_by = 'relevance'
 #keep this
 scan_length = scan_count
 
@@ -100,31 +102,30 @@ def submission_slack(submissions_list):
 
 while True:
     try:
-        #needs sort and time filter swapped for variables
-        for submission in reddit.subreddit(subreddit_name).search(query, sort='relevance', time_filter='week'):
+        for submission in reddit.subreddit(subreddit_name).search(query, sort=sort_by, time_filter=posts_from):
             if submission is None:
-                #needs sort by updated for variable
-                message = f"There are no more <sort_by> results for *{config['reddit']['query']} related* in /r/{config['reddit']['subreddit']} this <posts_from> "
+                message = f"There are no more {sort_by} results for *{config['reddit']['query']}* in /r/{config['reddit']['subreddit']} this {posts_from}"
                 basic_slack(message)
-                print("reseting and sleeping until next week")
+                print("reseting and exiting")
                 submissions_list.clear()
-                time.sleep(604800)
+                exit()
             else:
                 submission_dict = {"submission_url": "", "submission_title": "", "submission_author_name": "", "submission_score": "", "submission_upvote_ratio": "", "submission_num_comments": "", "submission_created_utc": "", "submission_created_utc_format": ""}
                 submission.created_utc_format = datetime.fromtimestamp(submission.created_utc, tz=timezone.utc).isoformat()
                 print(f"Order: {len(submissions_list)} - Created: {submission.created_utc_format}, Title: {submission.title}, Upvotes: {submission.score}, Ratio: {submission.upvote_ratio}, Comments: {submission.num_comments}")
                 submission_dict.update({"submission_url": f"{submission.url}", "submission_title": f"{submission.title}", "submission_author_name": f"{submission.author.name}", "submission_score": f"{submission.score}", "submission_upvote_ratio": f"{submission.upvote_ratio}", "submission_num_comments": f"{submission.num_comments}", "submission_created_utc": f"{round(submission.created_utc)}", "submission_created_utc_format": f"{submission.created_utc_format}"})
                 submissions_list.append(submission_dict)
-                if len(submissions_list) <= scan_length:
+                if len(submissions_list) == scan_length or len(submissions_list) == len(list(reddit.subreddit(subreddit_name).search(query, sort=sort_by, time_filter=posts_from))):
                     #needs posts from updated for variable
-                    message = f"Below are this <posts_from>'s *{config['reddit']['query']} related* _Top {scan_count} Posts_ in /r/{config['reddit']['subreddit']} :sports_medal:" 
+                    message = f"Below are this {posts_from}'s *{config['reddit']['query']}* _Top {scan_count}_ *{sort_by}* posts in /r/{config['reddit']['subreddit']} :sports_medal:" 
                     prelude_slack(message)
                     for i in range(len(submissions_list)):
                         submission_slack(submissions_list = submissions_list[i])
-                else:
-                    print("reseting and sleeping until next week")
+                    print("reseting and exiting")
                     submissions_list.clear()
-                    time.sleep(604800)
+                    exit()
+                else:
+                    continue
     except RedditAPIException as e:
         print("error - waiting 5 seconds and trying again")
         time.sleep(5)
