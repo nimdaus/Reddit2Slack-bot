@@ -1,18 +1,21 @@
 {
-    "reddit": {
-      "client-id": "123",
-      "client-secret": "123",
-      "username": "123",
-      "password": "123!",
-      "user_agent": "123",
-      "subreddit": "123",
-      "query": "123"
-    },
-    "slack":{
-      "slack-hook-url": "123",
-      "token": "123",
-      "channel": "123",
-      "token-private": "123",
-      "channel-private": "123"
-    }
+  "healthcheck":{
+    "uuid": "your-uuid-here"
+  },
+  "reddit": {
+    "client-id": "123",
+    "client-secret": "123",
+    "username": "123",
+    "password": "123!",
+    "user_agent": "123",
+    "subreddit": "123",
+    "query": "123"
+  },
+  "slack":{
+    "slack-hook-url": "123",
+    "token": "123",
+    "channel": "123",
+    "token-private": "123",
+    "channel-private": "123"
   }
+}
