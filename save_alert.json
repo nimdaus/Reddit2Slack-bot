@@ -1,0 +1,19 @@
+[
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": ""
+        }
+    },
+    {
+        "type": "divider"
+    },
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": ""
+        }
+    }
+]
