@@ -9,7 +9,10 @@
     "password": "123!",
     "user_agent": "123",
     "subreddit": "123",
-    "query": "123"
+    "query": "123",
+    "scan_count": "3",
+    "posts_from": "week",
+    "sort_by": "relevance"
   },
   "slack":{
     "slack-hook-url": "123",
