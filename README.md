@@ -9,6 +9,7 @@ Supports the following:
 
 Includes the following functionality:
 * Saved Submission / Comment Alerting
+* Gild Submission / Comment Alerting
 * Weekly Top Reporting
 * Weekly "from query" Top Reporting
 
