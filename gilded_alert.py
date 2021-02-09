@@ -1,4 +1,3 @@
-from typing_extensions import runtime
 import praw
 from praw.exceptions import RedditAPIException
 from prawcore.exceptions import PrawcoreException
