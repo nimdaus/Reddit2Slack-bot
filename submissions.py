@@ -46,7 +46,7 @@ def slack_submission(permalink, title, name, created_utc, created_utc_format, se
     client.chat_postMessage(channel = slack_channel, blocks = message)
     return
 
-def heartbeat(good_state, info):
+def heartbeat(config=config, good_state, info):
     if good_state == True:
         requests.get(f"https://hc-ping.com/{config['healthcheck']['uuid']}", timeout=10)
     else:
@@ -68,32 +68,32 @@ while True:
                 if compound_score > 0.5:
                     sentiment = ":slightly_smiling_face: Seems *Positive*"
                     slack_submission(permalink=submission.permalink, title=submission.title, name=submission.author.name, created_utc=submission.created_utc, created_utc_format=submission.created_utc_format, self_text=submission.selftext, sentiment=sentiment)
-                    heartbeat(good_state=True, info="Success")
+                    heartbeat(config=config, good_state=True, info="Success")
                 elif compound_score < 0:
                     sentiment = ":dissappointed: Seems *Negative*"
                     slack_submission(permalink=submission.permalink, title=submission.title, name=submission.author.name, created_utc=submission.created_utc, created_utc_format=submission.created_utc_format, self_text=submission.selftext, sentiment=sentiment)
-                    heartbeat(good_state=True, info="Success")
+                    heartbeat(config=config, good_state=True, info="Success")
                 else:
                     sentiment = "¯\_(ツ)_/¯ Sorry I couldn't detect a substantial sentiment"
                     slack_submission(permalink=submission.permalink, title=submission.title, name=submission.author.name, created_utc=submission.created_utc, created_utc_format=submission.created_utc_format, self_text=submission.selftext, sentiment=sentiment)
-                    heartbeat(good_state=True, info="Success")
+                    heartbeat(config=config, good_state=True, info="Success")
     except RedditAPIException as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
-        heartbeat(good_state=False, info=f"{e}")
+        heartbeat(config=config, good_state=False, info=f"{e}")
         time.sleep(5)
         continue
     except PrawcoreException as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
-        heartbeat(good_state=False, info=f"{e}")
+        heartbeat(config=config, good_state=False, info=f"{e}")
         time.sleep(5)
         continue
     except SlackApiError as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
-        heartbeat(good_state=False, info=f"{e}")
+        heartbeat(config=config, good_state=False, info=f"{e}")
         time.sleep(5)
         continue
     except Exception as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
-        heartbeat(good_state=False, info=f"{e}")
+        heartbeat(config=config, good_state=False, info=f"{e}")
         time.sleep(5)
         quit()
