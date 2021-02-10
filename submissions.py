@@ -8,19 +8,8 @@ import time
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-#import os
 
 def load_config():
-    ## FOR WHEN DOCKERIZED
-    #os.environ['client-id']
-    #os.environ['client-secret']
-    #os.environ['username']
-    #os.environ['password']
-    #os.environ['user-agent']
-    #os.environ['query']
-    #os.environ['subreddit']
-    #os.environ['token']
-    #os.environ['channel']
     global reddit, query, subreddit_name, slack_token, slack_channel, config
     config = json.load(open('config.json'))
     reddit = praw.Reddit(
@@ -29,7 +18,6 @@ def load_config():
         username=config['reddit']['username'],
         password=config['reddit']['password'],
         user_agent=config['reddit']['user_agent'])
-
     query = config['reddit']['query']
     subreddit_name = config['reddit']['subreddit']
     slack_token = config['slack']['token']
@@ -46,7 +34,8 @@ def slack_submission(permalink, title, name, created_utc, created_utc_format, se
     client.chat_postMessage(channel = slack_channel, blocks = message)
     return
 
-def heartbeat(config=config, good_state, info):
+def heartbeat(good_state, info):
+    load_config()
     if good_state == True:
         requests.get(f"https://hc-ping.com/{config['healthcheck']['uuid']}", timeout=10)
     else:
@@ -68,15 +57,15 @@ while True:
                 if compound_score > 0.5:
                     sentiment = ":slightly_smiling_face: Seems *Positive*"
                     slack_submission(permalink=submission.permalink, title=submission.title, name=submission.author.name, created_utc=submission.created_utc, created_utc_format=submission.created_utc_format, self_text=submission.selftext, sentiment=sentiment)
-                    heartbeat(config=config, good_state=True, info="Success")
+                    heartbeat(good_state=True, info="Success")
                 elif compound_score < 0:
                     sentiment = ":dissappointed: Seems *Negative*"
                     slack_submission(permalink=submission.permalink, title=submission.title, name=submission.author.name, created_utc=submission.created_utc, created_utc_format=submission.created_utc_format, self_text=submission.selftext, sentiment=sentiment)
-                    heartbeat(config=config, good_state=True, info="Success")
+                    heartbeat(good_state=True, info="Success")
                 else:
                     sentiment = "¯\_(ツ)_/¯ Sorry I couldn't detect a substantial sentiment"
                     slack_submission(permalink=submission.permalink, title=submission.title, name=submission.author.name, created_utc=submission.created_utc, created_utc_format=submission.created_utc_format, self_text=submission.selftext, sentiment=sentiment)
-                    heartbeat(config=config, good_state=True, info="Success")
+                    heartbeat(good_state=True, info="Success")
     except RedditAPIException as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
         heartbeat(config=config, good_state=False, info=f"{e}")
@@ -84,16 +73,16 @@ while True:
         continue
     except PrawcoreException as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
-        heartbeat(config=config, good_state=False, info=f"{e}")
+        heartbeat(good_state=False, info=f"{e}")
         time.sleep(5)
         continue
     except SlackApiError as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
-        heartbeat(config=config, good_state=False, info=f"{e}")
+        heartbeat(good_state=False, info=f"{e}")
         time.sleep(5)
         continue
     except Exception as e:
         print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
-        heartbeat(config=config, good_state=False, info=f"{e}")
+        heartbeat(good_state=False, info=f"{e}")
         time.sleep(5)
         quit()
