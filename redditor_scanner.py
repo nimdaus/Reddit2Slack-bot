@@ -1,5 +1,4 @@
 from psaw import PushshiftAPI
-import datetime as dt
 import praw
 from praw.exceptions import RedditAPIException
 from prawcore.exceptions import PrawcoreException
@@ -7,59 +6,121 @@ import json
 from datetime import datetime, timezone
 import requests
 import time
-from slack import WebClient
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+#import os
 
-## FOR WHEN DOCKERIZED
-#client_id = os.environ['client_id']
-#client_secret = os.environ['client_secret']
-#username = os.environ['username']
-#password = os.environ['password']
-#user_agent = os.environ['user_agent']
-#uredditor = os.environ['uredditor']
-#slack_token = os.environ['slack_token']
-#slack_channel = os.environ['slack_channel']
+def load_config():
+    ## FOR WHEN DOCKERIZED
+    #os.environ['client-id']
+    #os.environ['client-secret']
+    #os.environ['username']
+    #os.environ['password']
+    #os.environ['user-agent']
+    #os.environ['query']
+    #os.environ['subreddit']
+    #os.environ['token']
+    #os.environ['channel']
+    global reddit, query, subreddit_name, slack_token, slack_channel, config
+    config = json.load(open('config.json'))
+    reddit = praw.Reddit(
+        client_id=config['reddit']['client-id'],
+        client_secret=config['reddit']['client-secret'],
+        username=config['reddit']['username'],
+        password=config['reddit']['password'],
+        user_agent=config['reddit']['user_agent'])
+    query = config['reddit']['query']
+    subreddit_name = config['reddit']['subreddit']
+    slack_token = config['slack']['token']
+    slack_channel = config['slack']['channel']
+    return reddit, query, subreddit_name, slack_token, slack_channel, config
 
 
-##I'd love to replace this with oauth2
-# reddit = praw.Reddit(
-#     client_id=client_id,
-#     client_secret=client_secret,
-#     username=username,
-#     password=password,
-#     user_agent=user_agent)
+def slack_message():
+    print(f"Scan Complete!")
+    client = WebClient(token=slack_token)
+    message = json.load(open("redditor_template.json", "r"))
+    message[0]["text"]["text"] = f"Redditor: *<https://reddit.com/u/{uredditor}|{uredditor}>*\nAccount Age: *{age}*\nEmail Verified: *{}*\nKarma: *{submission_karma}* Submission and *{comment_karma}* Comment\nPremium: {has_gold}"
+    message[2]["text"]["text"] = f"*Activity in /r/{subreddit_name}:*\n6 Month Activity: {subreddit_submissions_6} Submissions and {subreddit_comments_6} Comments\n3 Year Activity: {subreddit_submissions_3} Submissions and {subreddit_comments_3} Comments"
+    message[3]["text"]["text"] = f""
+    client.chat_postMessage(channel = slack_channel, blocks = message)
+    return
 
-config = json.load(open('config.json'))
-reddit = praw.Reddit(
-    client_id=config['reddit']['client-id'],
-    client_secret=config['reddit']['client-secret'],
-    username=config['reddit']['username'],
-    password=config['reddit']['password'],
-    user_agent=config['reddit']['user_agent'])
+api = PushshiftAPI(reddit)
+load_config()
+api = PushshiftAPI(reddit)
+analyzer = SentimentIntensityAnalyzer()
 
-api = PushshiftAPI()
-
-'''
-age of account
-verified email?
-reddit post vs comment karma
-last 3 comments + score + sentiment
-last 3 posts + score + sentiment
-context line: I'm busy collecting info, more on this later.
-'''
 uredditor = "Diamond_Cut"
-
 user = reddit.redditor(f'{uredditor}')
-user.created_utc_format = datetime.fromtimestamp(user.created_utc, tz=timezone.utc).isoformat()
-print(user.created_utc_format)
-print(user.has_verified_email)
-print(f"Post Karma: {user.link_karma}")
-print(f"Link Karma: {user.comment_karma}")
-for comment in reddit.redditor(f'{uredditor}').comments.new(limit=3):
-    print(comment.body[:180])
-for submission in reddit.redditor(f'{uredditor}').submissions.new(limit=3):
-    print(submission.selftext[:180])
+age_utc = time.time() - user.created_utc
+age = age_utc / 60 / 60 / 24 / 365.25
+verified_email = user.has_verified_email
+has_gold = reddit.redditor(f'{uredditor}').is_gold
+submission_karma = user.link_karma
+comment_karma = user.comment_karma
 
-# start_epoch = int(dt.datetime(2020, 1, 1).timestamp())
-# #after=start_epoch
-# result = api.redditor_subreddit_activity(f'{uredditor}')
-# print(result)
+# for comment in reddit.redditor(f'{uredditor}').comments.new(limit=3):
+#     compound_score = analyzer.polarity_scores(comment.body)["compound"]
+#     print(comment.body[:140])
+#     print(comment.score)
+#     print(compound_score)
+# for comment in reddit.redditor(f'{uredditor}').comments.top(limit=3):
+#     compound_score = analyzer.polarity_scores(comment.body)["compound"]
+#     print(comment.body[:140])
+#     print(comment.score)
+#     print(compound_score)
+# for submission in reddit.redditor(f'{uredditor}').submissions.new(limit=3):
+#     compound_score = analyzer.polarity_scores(submission.selftext)["compound"]
+#     print(submission.title[:140])
+#     print(submission.selftext[:140])
+#     print(submission.score)
+#     print(compound_score)
+# for submission in reddit.redditor(f'{uredditor}').submissions.top(limit=3):
+#     compound_score = analyzer.polarity_scores(submission.selftext)["compound"]
+#     print(submission.title[:140])
+#     print(submission.selftext[:140])
+#     print(submission.score)
+#     print(compound_score)
+
+six_months_ago = time.time() - 15780000
+user_submissions_6 = api.search_submissions(after=six_months_ago,
+                            subreddit=f'{subreddit_name}',
+                            author=f"{uredditor}", filter=['created_utc', 'url', 'author', 'title', 'subreddit'])
+subreddit_submissions_6 = len(list(user_submissions_6))
+user_comments_6 = api.search_comments(after=six_months_ago,
+                            subreddit=f'{subreddit_name}',
+                            author=f"{uredditor}", filter=['created_utc', 'url', 'author', 'subreddit'])
+subreddit_comments_6 = len(list(user_comments_6))
+
+three_years_ago = time.time() - 94608000
+user_submissions_3 = api.search_submissions(after=three_years_ago,
+                            subreddit=f'{subreddit_name}',
+                            author=f"{uredditor}", filter=['created_utc', 'url', 'author', 'title', 'subreddit'])
+subreddit_submissions_3 = len(list(user_submissions_3))
+user_comments_3 = api.search_comments(after=three_years_ago,
+                            subreddit=f'{subreddit_name}',
+                            author=f"{uredditor}", filter=['created_utc', 'url', 'author', 'subreddit'])
+subreddit_comments_3 = len(list(user_comments_3))
+
+except RedditAPIException as e:
+    print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
+    heartbeat(good_state=False, info=f"{e}")
+    time.sleep(5)
+    continue
+except PrawcoreException as e:
+    print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
+    heartbeat(good_state=False, info=f"{e}")
+    time.sleep(5)
+    continue
+except SlackApiError as e:
+    print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
+    heartbeat(good_state=False, info=f"{e}")
+    time.sleep(5)
+    continue
+except Exception as e:
+    print(f"ErrorMSG - {e}\nWaiting 5 seconds and trying again")
+    heartbeat(good_state=False, info=f"{e}")
+    time.sleep(5)
+    quit()
