@@ -16,3 +16,5 @@ Includes the following functionality:
 TO BE ADDED:
 * Subreddit Health
 * Redditor Scanning
+** interaction via slash code
+** interaction via text
