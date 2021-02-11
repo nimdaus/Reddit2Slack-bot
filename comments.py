@@ -8,19 +8,8 @@ import time
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-#import os
 
 def load_config():
-    ## FOR WHEN DOCKERIZED
-    #os.environ['client-id']
-    #os.environ['client-secret']
-    #os.environ['username']
-    #os.environ['password']
-    #os.environ['user-agent']
-    #os.environ['query']
-    #os.environ['subreddit']
-    #os.environ['token']
-    #os.environ['channel']
     global reddit, query, subreddit_name, slack_token, slack_channel, config
     config = json.load(open('config.json'))
     reddit = praw.Reddit(
@@ -47,6 +36,7 @@ def slack_comment(permalink, title, name, created_utc, created_utc_format, body_
     return
 
 def heartbeat(good_state, info):
+    load_config()
     if good_state == True:
         requests.get(f"https://hc-ping.com/{config['healthcheck']['uuid']}", timeout=10)
     else:
