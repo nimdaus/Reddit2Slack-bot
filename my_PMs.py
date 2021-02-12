@@ -33,7 +33,7 @@ def load_config():
 
     query = config['reddit']['query']
     subreddit_name = config['reddit']['subreddit']
-    slack_token = config['slack']['token-private']
+    slack_token = config['slack']['token']
     slack_channel = config['slack']['channel-private']
     return reddit, query, subreddit_name, slack_token, slack_channel, config
 

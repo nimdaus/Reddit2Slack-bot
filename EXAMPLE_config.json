@@ -17,8 +17,8 @@
   "slack":{
     "slack-hook-url": "123",
     "token": "123",
+    "signing_secret": "123",
     "channel": "123",
-    "token-private": "123",
     "channel-private": "123"
   }
 }
