@@ -60,6 +60,7 @@ while True:
         analyzer = SentimentIntensityAnalyzer()
         for item in reddit.inbox.stream(pause_after=1, skip_existing=True):
             if item is None:
+                print("no message")
                 continue
 #            if isinstance(item, Message):
             item.created_utc_format = datetime.fromtimestamp(item.created_utc, tz=timezone.utc).isoformat()

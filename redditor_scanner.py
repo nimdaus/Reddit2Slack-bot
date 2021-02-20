@@ -28,8 +28,6 @@ def load_config():
     signing_secret = config['slack']['signing_secret']
     return reddit, query, subreddit_name, slack_token, slack_channel, config, signing_secret
 
-
-
 # need to make the actual hunter a function
 # function needs username as input
 def reddit_hunter(uredditor):
@@ -79,7 +77,7 @@ def message(payload):
     reddit_hunter(uredditor)
 
     if BOT_ID != user_id:
-        slack_message(uredditor=uredditor, age=age, verified_email, has_gold, submission_karma, comment_karma, subreddit_submissions_6, subreddit_comments_6, subreddit_submissions_3, subreddit_comments_3)
+        slack_message(uredditor=uredditor, age=age, verified_email=verified_email, has_gold=has_gold, submission_karma=submission_karma, comment_karma=comment_karma, subreddit_submissions_6=subreddit_submissions_6, subreddit_comments_6=subreddit_comments_6, subreddit_submissions_3=subreddit_submissions_3, subreddit_comments_3=subreddit_comments_3)
 
 @app.route('/target', methods=['POST'])
 def target():
