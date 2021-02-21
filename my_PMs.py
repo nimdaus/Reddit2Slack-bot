@@ -43,7 +43,7 @@ def slack_comment(permalink, title, name, created_utc, created_utc_format, body_
     message = json.load(open("msg_template.json", "r"))
     message[0]["text"]["text"] = f"*Private Message* Subject: {title}\nFrom:<https://reddit.com/u/{name}|{name}>*\n*Posted*: <!date^{round(created_utc)}^{{date_short_pretty}} {{time}}|{created_utc_format}>"
     message[2]["text"]["text"] = f"{body_short[:280]}..."
-    message[3]["elements"]["text"] = f"{sentiment}"
+    message[3]["elements"][0]["text"] = f"{sentiment}"
     client.chat_postMessage(channel = slack_channel, blocks = message)
     return
 

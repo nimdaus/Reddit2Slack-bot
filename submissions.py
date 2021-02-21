@@ -30,7 +30,7 @@ def slack_submission(permalink, title, name, created_utc, created_utc_format, se
     message = json.load(open("msg_template.json", "r"))
     message[0]["text"]["text"] = f"*<https://reddit.com{permalink}|{title}>* by <https://reddit.com/u/{name}|{name}>\n*Posted*: <!date^{round(created_utc)}^{{date_short_pretty}} {{time}}|{created_utc_format}>"
     message[2]["text"]["text"] = f"{self_text}"
-    message[3]["elements"]["text"] = f"{sentiment}"
+    message[3]["elements"][0]["text"] = f"{sentiment}"
     client.chat_postMessage(channel = slack_channel, blocks = message)
     return
 
