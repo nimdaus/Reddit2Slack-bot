@@ -16,8 +16,7 @@ Includes the following functionality:
 TO BE ADDED:
 * Subreddit Health
 * Redditor Scanning
-
-
-** interaction via slash code
-
-** interaction via text
+* interaction via slash code
+* interaction via text
+* database storage for multiple terms and long run classification (wo/ pushshift reliance)
+* multiple chat support
