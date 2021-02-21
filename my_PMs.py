@@ -38,10 +38,9 @@ def load_config():
     return reddit, query, subreddit_name, slack_token, slack_channel, config
 
 def slack_comment(permalink, title, name, created_utc, created_utc_format, body_short, sentiment):
-    print(f"PM on: *{permalink}|{title}>* by <https://reddit.com/u/{name}|{name}>\n*Sent*: <!date^{round(created_utc)}^{{date_short_pretty}} {{time}}|{created_utc_format}>")
     client = WebClient(token=slack_token)
     message = json.load(open("msg_template.json", "r"))
-    message[0]["text"]["text"] = f"*Private Message* Subject: {title}\nFrom:<https://reddit.com/u/{name}|{name}>*\n*Posted*: <!date^{round(created_utc)}^{{date_short_pretty}} {{time}}|{created_utc_format}>"
+    message[0]["text"]["text"] = f"*Private Message* from:<https://reddit.com/u/{name}|{name}>\n*Subject:* {title}\n*Posted*: <!date^{round(created_utc)}^{{date_short_pretty}} {{time}}|{created_utc_format}>"
     message[2]["text"]["text"] = f"{body_short[:280]}..."
     message[3]["elements"][0]["text"] = f"{sentiment}"
     client.chat_postMessage(channel = slack_channel, blocks = message)
