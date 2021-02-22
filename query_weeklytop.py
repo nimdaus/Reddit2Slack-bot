@@ -9,16 +9,6 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 def load_config():
-    ## FOR WHEN DOCKERIZED
-    #os.environ['client-id']
-    #os.environ['client-secret']
-    #os.environ['username']
-    #os.environ['password']
-    #os.environ['user-agent']
-    #os.environ['query']
-    #os.environ['subreddit']
-    #os.environ['token']
-    #os.environ['channel']
     global reddit, query, subreddit_name, slack_token, slack_channel, config, scan_count, posts_from, sort_by
     config = json.load(open('config.json'))
     reddit = praw.Reddit(
@@ -43,7 +33,7 @@ def slack_comment(text_1, text_2, text_3, divide):
         message[1]["type"] = ""
     message[0]["text"]["text"] = text_1
     message[2]["text"]["text"] = text_2
-    message[3]["elements"]["text"] = text_3
+    message[3]["elements"][0]["text"] = text_3
     client.chat_postMessage(channel = slack_channel, blocks = message)
     return
 

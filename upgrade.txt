@@ -1,0 +1,4 @@
+should have standard json file for each msg format
+read into app
+edit
+write back to json befor posting with json.dumps(list)

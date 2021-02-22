@@ -1,0 +1,15 @@
+[
+    {
+        "type": "section",
+        "fields": [
+            {
+                "type": "mrkdwn",
+                "text": "One\nTwo\nThree\nFour"
+            },
+            {
+                "type": "mrkdwn",
+                "text": "One\nTwo\nThree\nFour"
+            }
+        ]
+    }
+]
