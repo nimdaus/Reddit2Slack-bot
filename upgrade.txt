@@ -2,3 +2,9 @@ should have standard json file for each msg format
 read into app
 edit
 write back to json befor posting with json.dumps(list)
+
+--------
+how to centralise for to reduce api strain
+stream comments/posts to separate tables in database (postgres)
+then monitor / read every minute?
+--> there's got to be a better way to monitor

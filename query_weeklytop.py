@@ -7,6 +7,7 @@ import requests
 import time
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+import copy
 
 def load_config():
     global reddit, query, subreddit_name, slack_token, slack_channel, config, scan_count, posts_from, sort_by
@@ -28,12 +29,22 @@ def load_config():
 
 def slack_comment(text_1, text_2, text_3, divide):
     client = WebClient(token=slack_token)
-    message = json.load(open("msg_template.json", "r"))
+    header = json.load(open("msg_templates/section_markdwn.json", "r"))
+    divider = json.load(open("msg_templates/section_markdwn.json", "r"))
+    text = json.load(open("msg_templates/section_markdwn.json", "r"))
+
+    msg_header = copy.deepcopy(header)
+    msg_header = f"{scan_count} {sort_by} results from /r/{config['reddit']['subreddit']} this {posts_from}"
+    divider
+    msg_text = copy.deepcopy(text)
+    msg_text = f"*<{submissions_list[i]['submission_url']}|{submissions_list[i]['submission_title']}>* by <https://reddit.com/u/{submissions_list[i]['submission_author_name']}|{submissions_list[i]['submission_author_name']}>\n*Upvotes*: {submissions_list[i]['submission_score']} *|* *Upvote Ratio*: {submissions_list[i]['submission_upvote_ratio']} *|* *Comments*: {submissions_list[i]['submission_num_comments']} *|* *Posted*: <!date^{submissions_list[i]['submission_created_utc']}^{{date_short_pretty}} {{time}}|{submissions_list[i]['submission_created_utc_format']}>"
+
     if divide == False:
         message[1]["type"] = ""
     message[0]["text"]["text"] = text_1
     message[2]["text"]["text"] = text_2
     message[3]["elements"][0]["text"] = text_3
+
     client.chat_postMessage(channel = slack_channel, blocks = message)
     return
 
@@ -70,6 +81,7 @@ while True:
                     slack_comment(text_1=message, text_2="", text_3="", divide=True)
                     for i in range(len(submissions_list)):
                         message = f"*<{submissions_list[i]['submission_url']}|{submissions_list[i]['submission_title']}>* by <https://reddit.com/u/{submissions_list[i]['submission_author_name']}|{submissions_list[i]['submission_author_name']}>\n*Upvotes*: {submissions_list[i]['submission_score']} *|* *Upvote Ratio*: {submissions_list[i]['submission_upvote_ratio']} *|* *Comments*: {submissions_list[i]['submission_num_comments']} *|* *Posted*: <!date^{submissions_list[i]['submission_created_utc']}^{{date_short_pretty}} {{time}}|{submissions_list[i]['submission_created_utc_format']}>"
+                        #need to make the full string here
                         slack_comment(text_1=message, text_2="", text_3="")
                     heartbeat(good_state=True, info="Success")
                     print("reseting and exiting")

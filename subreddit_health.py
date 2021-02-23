@@ -34,16 +34,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 ''' START CONFIGURATION '''
-## FOR WHEN DOCKERIZED
-#client_id = os.environ['client_id']
-#client_secret = os.environ['client_secret']
-#username = os.environ['username']
-#password = os.environ['password']
-#user_agent = os.environ['user_agent']
-#query = os.environ['query']
-#subreddit = os.environ['subreddit']
-#posts_from = os.environ['posts_from']
-#sort_by = os.environ['sort_by']
+
 
 #start_year = os.environ['start_year']
 #start_month = os.environ['start_month']
