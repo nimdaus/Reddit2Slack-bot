@@ -3,7 +3,8 @@
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": ""
+            "text": "",
+            "unfurl_links": false
         }
     }
 ]

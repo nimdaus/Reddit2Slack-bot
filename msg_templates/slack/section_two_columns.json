@@ -4,11 +4,13 @@
         "fields": [
             {
                 "type": "mrkdwn",
-                "text": "One\nTwo\nThree\nFour"
+                "text": "One\nTwo\nThree\nFour",
+                "unfurl_links": false
             },
             {
                 "type": "mrkdwn",
-                "text": "One\nTwo\nThree\nFour"
+                "text": "One\nTwo\nThree\nFour",
+                "unfurl_links": false
             }
         ]
     }
