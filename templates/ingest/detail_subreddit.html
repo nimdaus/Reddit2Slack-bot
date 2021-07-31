@@ -1,0 +1,31 @@
+<div class="card">
+  <h5 class="card-header">{{ item.subreddit_id }}</h5>
+  <div class="card-body">
+    <h5 class="card-title">{{ item.display_name }}</h5>
+    <p class="card-text">{{ item.description }}</p>
+	<p class="card-text"><small class="text-muted">Created: {{ item.created_utc }} || Updated: {{ item.updated_utc }}</small></p>
+	</div>
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item">Subscribers: {{ item.score }} || Last Month: X</li> <!-- Needs additional qs -->
+		</ul>
+	<a href="reddit.com/r/{{ item.display_name }}" class="btn btn-primary">Go to Item</a>
+  </div>
+</div>
+
+
+
+
+<!--
+    subreddit_id 
+    display_name 
+    description 
+    created_utc 
+    updated_utc
+    subscribers
+
+
+{% if show_content %}
+	{% include 'products/snippets/product_content.html' with product=product %}
+{% endif %}
+-->
+

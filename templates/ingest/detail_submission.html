@@ -1,0 +1,41 @@
+<div class="card">
+  <h5 class="card-header">{{ item.subreddit_id }}</h5>
+  <div class="card-body">
+    <h5 class="card-title">{{ item.title }}</h5>
+    <p class="card-text">{{ item.self_text }}</p>
+	<p class="card-text"><small class="text-muted">Created: {{ item.created_utc }} || Updated: {{ item.updated_utc }}</small></p>
+	</div>
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item">Score: {{ item.score }} || Ratio: {{ item.upvote_ratio }}</li>
+		</ul>
+	<footer class="blockquote-footer">By <cite title="{{ item.author_id }}">{{ item.author_id }}</cite></footer>
+	<a href="{{ item.permalink }}" class="btn btn-primary">Go to Item</a>
+  </div>
+</div>
+
+
+
+
+<!--
+
+{{ item.submission_id }}
+{{ item.subreddit_id }}
+{{ item.created_utc }}
+{{ item.title }}
+{{ item.author_id }}
+{{ item.self_text }}
+{{ item.link_flair_text }}
+{{ item.updated_utc }}
+{{ item.distinguished }}
+{{ item.edited }}
+{{ item.score }}
+{{ item.upvote_ratio }}
+{{ item.is_original_content }}
+{{ item.permalink }}
+
+
+{% if show_content %}
+	{% include 'products/snippets/product_content.html' with product=product %}
+{% endif %}
+-->
+

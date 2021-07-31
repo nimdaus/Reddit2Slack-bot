@@ -1,0 +1,5 @@
+SUBMISSIONS
+#update function will need to check edited / distinguished / score / stickied / num_comments / is_original_content / locked / link_flair_text
+
+COMMENTS
+#update function will need to check edited / distinguished / score / stickied / num_comments above OP OR below OP attribute 

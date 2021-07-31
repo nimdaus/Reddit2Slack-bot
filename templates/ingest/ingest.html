@@ -1,0 +1,16 @@
+{% extends "core.html" %}
+{% block title %}Ingest - {{ block.super }}{% endblock %}
+{% block main %}
+
+{% for object in qs %}
+    <div>
+        {% if object.body %}
+            {% include 'ingest/detail_comment.html' with item=object %}
+        {% elif object.self_text %}
+            {% include 'ingest/detail_submission.html' with item=object %}
+        {% else %}
+            {% include 'ingest/detail_subreddit.html' with item=object %}
+    </div>
+{% endfor %}
+
+{% endblock %}
